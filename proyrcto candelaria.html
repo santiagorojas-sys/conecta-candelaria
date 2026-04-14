@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ConectaCandelaria — I.E. La Candelaria</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --green-dark:   #1a4a2e;
+  --green-mid:    #2d7a4f;
+  --green-light:  #4caf78;
+  --green-pale:   #e8f5ed;
+  --green-pale2:  #d4eddd;
+  --yellow:       #f0b429;
+  --yellow-dark:  #c8920a;
+  --yellow-light: #fff8e7;
+  --red:          #c0392b;
+  --red-light:    #fdecea;
+  --orange:       #e07b2a;
+  --orange-light: #fff0e0;
+  --white:        #ffffff;
+  --gray-50:      #f8f9fa;
+  --gray-100:     #f1f3f5;
+  --gray-200:     #e5e7eb;
+  --gray-300:     #d1d5db;
+  --gray-400:     #9ca3af;
+  --gray-500:     #6b7280;
+  --gray-600:     #4b5563;
+  --gray-800:     #1f2937;
+  --text:         #1a2e1f;
+  --text-muted:   #4b6358;
+  --radius-sm:    0.375rem;
+  --radius-md:    0.625rem;
+  --radius-lg:    1rem;
+  --radius-xl:    1.5rem;
+  --radius-full:  9999px;
+  --shadow-sm:    0 1px 3px rgba(26,74,46,0.08);
+  --shadow-md:    0 4px 16px rgba(26,74,46,0.13);
+  --shadow-lg:    0 12px 40px rgba(26,74,46,0.18);
+  --trans:        180ms cubic-bezier(0.16,1,0.3,1);
+  --font:         'Plus Jakarta Sans', sans-serif;
+}
+[data-theme="dark"] {
+  --green-dark:   #a8d5b5;
+  --green-mid:    #6ec48a;
+  --green-pale:   #1a2e22;
+  --green-pale2:  #1e3527;
+  --yellow:       #fbbf24;
+  --yellow-light: #2a2210;
+  --red:          #f87171;
+  --red-light:    #2a1515;
+  --white:        #1c2820;
+  --gray-50:      #161e1a;
+  --gray-100:     #1e2922;
+  --gray-200:     #273529;
+  --gray-300:     #374d3d;
+  --gray-400:     #5a7a63;
+  --gray-500:     #7a9e82;
+  --gray-600:     #a3bfa9;
+  --gray-800:     #d4e8d8;
+  --text:         #d4e8d8;
+  --text-muted:   #8ab899;
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md:    0 4px 16px rgba(0,0,0,0.4);
+  --shadow-lg:    0 12px 40px rgba(0,0,0,0.5);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{font-family:var(--font);font-size:1rem;color:var(--text);background:var(--gray-50);min-height:100dvh;transition:background 0.3s,color 0.3s}
+img{display:block;max-width:100%;height:auto}
+button{cursor:pointer;font:inherit;border:none;background:none}
+input,textarea,select{font:inherit}
+ul{list-style:none}
+.view{display:none}
+.view.active{display:block}
+
+/* NAV */
+.navbar{
+  position:sticky;top:0;z-index:100;
+  background:linear-gradient(135deg,var(--green-dark) 0%,var(--green-mid) 100%);
+  box-shadow:0 2px 20px rgba(0,0,0,0.2);
+}
+.navbar-inner{
+  max-width:1200px;margin:0 auto;padding:0 1.5rem;
+  display:flex;align-items:center;gap:0.75rem;height:66px;
+}
+.nav-logo{display:flex;align-items:center;gap:0.75rem;text-decoration:none;cursor:pointer}
+.nav-logo img{width:42px;height:42px;border-radius:50%;border:2px solid var(--yellow);object-fit:cover;flex-shrink:0}
+.nav-logo-text{font-size:1.1rem;font-weight:800;color:#fff;line-height:1.1}
+.nav-logo-text span{display:block;font-size:0.68rem;font-weight:400;color:rgba(255,255,255,0.7);letter-spacing:0.05em;text-transform:uppercase}
+.nav-links{display:flex;gap:0.2rem;margin-left:auto;align-items:center;flex-wrap:nowrap}
+.nav-link{color:rgba(255,255,255,0.82);font-size:0.85rem;font-weight:500;padding:0.45rem 0.8rem;border-radius:var(--radius-full);text-decoration:none;transition:background var(--trans),color var(--trans);white-space:nowrap;cursor:pointer;border:none;background:none}
+.nav-link:hover,.nav-link.active{background:rgba(255,255,255,0.15);color:#fff}
+.nav-btn-login{background:var(--yellow);color:var(--green-dark);padding:0.45rem 1rem;border-radius:var(--radius-full);font-weight:700;font-size:0.85rem;transition:all var(--trans);white-space:nowrap}
+.nav-btn-login:hover{background:#ffc93c;transform:translateY(-1px)}
+.nav-user{display:flex;align-items:center;gap:0.4rem;color:#fff;font-size:0.82rem;background:rgba(255,255,255,0.12);padding:0.35rem 0.75rem;border-radius:var(--radius-full)}
+.nav-user-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;flex-shrink:0}
+.btn-logout{color:rgba(255,255,255,0.7);font-size:0.78rem;padding:0.35rem 0.7rem;border-radius:var(--radius-full);border:1px solid rgba(255,255,255,0.25);transition:all var(--trans)}
+.btn-logout:hover{background:rgba(255,255,255,0.1);color:#fff}
+.theme-toggle{color:#fff;padding:0.4rem;border-radius:var(--radius-full);transition:background var(--trans);opacity:0.8}
+.theme-toggle:hover{background:rgba(255,255,255,0.15);opacity:1}
+.hamburger{display:none;color:#fff;padding:0.4rem;margin-left:0.5rem;flex-shrink:0}
+.nav-unread{background:var(--red);color:#fff;font-size:0.68rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:var(--radius-full);margin-left:0.25rem;vertical-align:middle}
+/* Separador en menú móvil */
+.nav-divider{height:1px;background:rgba(255,255,255,0.15);margin:0.4rem 0}
+/* Info de usuario dentro del menú móvil */
+.nav-user-menu{display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0.8rem;color:rgba(255,255,255,0.85);font-size:0.85rem;font-weight:600}
+.nav-user-dot-menu{width:8px;height:8px;border-radius:50%;background:#4ade80;flex-shrink:0}
+@media(max-width:768px){
+  .nav-links{display:none;position:fixed;top:66px;left:0;right:0;background:var(--green-dark);flex-direction:column;padding:1rem;gap:0.4rem;z-index:99;border-top:1px solid rgba(255,255,255,0.1)}
+  .nav-links.open{display:flex}
+  .hamburger{display:block}
+  /* Ocultar nav-user y btn-logout del navbar en móvil (van dentro del menú) */
+  .nav-user{display:none !important}
+  .btn-logout{display:none !important}
+  .theme-toggle{margin-left:0}
+}
+
+/* HERO */
+.hero{
+  background:linear-gradient(160deg,var(--green-dark) 0%,#2d7a4f 55%,#3a9e6a 100%);
+  padding:5rem 1.5rem 4rem;text-align:center;position:relative;overflow:hidden;
+}
+.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C%2Fg%3E%3C%2Fsvg%3E")}
+.hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 75% 40%,rgba(240,180,41,0.1) 0%,transparent 55%)}
+.hero-inner{position:relative;z-index:1;max-width:760px;margin:0 auto}
+.hero-logo{width:90px;height:90px;border-radius:50%;margin:0 auto 1.5rem;border:3px solid var(--yellow);box-shadow:0 0 0 8px rgba(240,180,41,0.2);object-fit:cover}
+.hero-badge{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.9);font-size:0.78rem;font-weight:600;letter-spacing:0.05em;padding:0.3rem 1rem;border-radius:var(--radius-full);margin-bottom:1.25rem}
+.hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:800;color:#fff;line-height:1.15;margin-bottom:1rem}
+.hero h1 span{color:var(--yellow)}
+.hero p{font-size:clamp(0.95rem,2vw,1.15rem);color:rgba(255,255,255,0.82);max-width:54ch;margin:0 auto 2rem;line-height:1.7}
+.hero-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.btn-primary{background:var(--yellow);color:var(--green-dark);font-weight:700;font-size:0.95rem;padding:0.8rem 1.75rem;border-radius:var(--radius-full);box-shadow:0 4px 16px rgba(240,180,41,0.4);transition:all var(--trans)}
+.btn-primary:hover{background:#ffc93c;transform:translateY(-2px);box-shadow:0 6px 24px rgba(240,180,41,0.5)}
+.btn-secondary{background:rgba(255,255,255,0.12);color:#fff;font-weight:600;font-size:0.95rem;padding:0.8rem 1.75rem;border-radius:var(--radius-full);border:1.5px solid rgba(255,255,255,0.3);transition:all var(--trans)}
+.btn-secondary:hover{background:rgba(255,255,255,0.2)}
+.hero-stats{display:flex;justify-content:center;gap:3rem;margin-top:3rem;flex-wrap:wrap;padding-top:2.5rem;border-top:1px solid rgba(255,255,255,0.1)}
+.stat{text-align:center}
+.stat-num{font-size:2rem;font-weight:800;color:var(--yellow)}
+.stat-label{font-size:0.75rem;color:rgba(255,255,255,0.65);text-transform:uppercase;letter-spacing:0.06em;margin-top:0.2rem}
+
+/* HOME FEED */
+.home-feed{padding:3rem 1.5rem;background:var(--white)}
+.home-feed-inner{max-width:1100px;margin:0 auto}
+.section-label{display:flex;align-items:center;gap:0.75rem;margin-bottom:1.75rem}
+.section-label h2{font-size:1.4rem;font-weight:800;color:var(--green-dark)}
+.section-label a{margin-left:auto;font-size:0.82rem;color:var(--green-mid);font-weight:600;text-decoration:none;padding:0.35rem 0.875rem;border-radius:var(--radius-full);border:1.5px solid var(--green-pale2);transition:all var(--trans);cursor:pointer}
+.section-label a:hover{background:var(--green-pale);border-color:var(--green-mid)}
+.home-feed-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.25rem}
+
+/* FEATURES */
+.features{padding:3rem 1.5rem;background:var(--gray-50)}
+.features-inner{max-width:1100px;margin:0 auto}
+.section-title{text-align:center;margin-bottom:2rem}
+.section-title h2{font-size:1.6rem;font-weight:800;color:var(--green-dark);margin-bottom:0.4rem}
+.section-title p{color:var(--text-muted);font-size:0.9rem;max-width:48ch;margin:0 auto}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem}
+.feature-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:1.5rem;transition:all var(--trans)}
+.feature-card:hover{box-shadow:var(--shadow-md);transform:translateY(-3px)}
+.feat-icon{width:46px;height:46px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;margin-bottom:0.875rem;font-size:1.4rem}
+.fi-g{background:var(--green-pale)}
+.fi-y{background:var(--yellow-light)}
+.fi-b{background:#e0f0ff}
+.fi-r{background:var(--red-light)}
+.feature-card h3{font-size:0.975rem;font-weight:700;margin-bottom:0.4rem;color:var(--green-dark)}
+.feature-card p{font-size:0.85rem;color:var(--text-muted);line-height:1.6}
+
+/* DIRECTORIO */
+.dir-section{padding:3rem 1.5rem}
+.dir-top{max-width:1200px;margin:0 auto 1.75rem;display:flex;align-items:center;flex-wrap:wrap;gap:1rem;justify-content:space-between}
+.dir-top h2{font-size:1.5rem;font-weight:800;color:var(--green-dark)}
+.search-wrap{display:flex;align-items:center;gap:0.5rem;background:var(--white);border:1.5px solid var(--gray-200);border-radius:var(--radius-full);padding:0.45rem 1rem;transition:border-color var(--trans)}
+.search-wrap:focus-within{border-color:var(--green-mid)}
+.search-wrap input{border:none;outline:none;font-size:0.875rem;background:transparent;color:var(--text);width:210px}
+.prof-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.5rem}
+.prof-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:1.5rem 1rem 1.25rem;text-align:center;transition:all var(--trans)}
+.prof-card:hover{box-shadow:var(--shadow-md);transform:translateY(-4px);border-color:var(--green-pale2)}
+.prof-avatar{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,var(--green-mid),var(--green-dark));margin:0 auto 1.25rem;display:flex;align-items:center;justify-content:center;font-size:2.5rem;font-weight:800;color:#fff;border:4px solid var(--green-pale2);box-shadow:0 4px 16px rgba(26,74,46,0.15);overflow:hidden;flex-shrink:0}
+.prof-avatar img{width:100%;height:100%;object-fit:cover}
+.prof-name{font-size:0.9rem;font-weight:700;color:var(--green-dark);margin-bottom:0.25rem;line-height:1.25}
+.prof-cargo{font-size:0.75rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.4}
+.btn-msg{background:linear-gradient(135deg,var(--green-mid),var(--green-dark));color:#fff;font-size:0.8rem;font-weight:600;padding:0.5rem 1rem;border-radius:var(--radius-full);transition:all var(--trans);width:100%}
+.btn-msg:hover{opacity:0.88;transform:scale(1.02)}
+
+/* PUBLICACIONES */
+.pub-section{padding:3rem 1.5rem}
+.pub-layout{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:2rem}
+@media(min-width:900px){.pub-layout{grid-template-columns:1fr 320px}}
+.pub-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:0.75rem}
+.pub-top h2{font-size:1.5rem;font-weight:800;color:var(--green-dark)}
+.filtros{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.filtro-btn{padding:0.4rem 1rem;border-radius:var(--radius-full);border:1.5px solid var(--gray-200);background:var(--white);font-size:0.8rem;font-weight:500;color:var(--gray-500);cursor:pointer;transition:all var(--trans)}
+.filtro-btn:hover,.filtro-btn.active{background:var(--green-dark);border-color:var(--green-dark);color:#fff}
+.pub-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1.1rem;transition:box-shadow var(--trans)}
+.pub-card:hover{box-shadow:var(--shadow-sm)}
+.pub-cat-bar{height:4px}
+.pub-cat-bar.Académico{background:#3b82f6}
+.pub-cat-bar.Bienestar{background:var(--green-mid)}
+.pub-cat-bar.Evento{background:var(--yellow)}
+.pub-cat-bar.Comunicado{background:#8b5cf6}
+.pub-cat-bar.General{background:var(--gray-300)}
+.pub-card-body{padding:1.25rem}
+.pub-meta-row{display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.75rem}
+.pub-cat-badge{font-size:0.7rem;font-weight:700;padding:0.2rem 0.65rem;border-radius:var(--radius-full);text-transform:uppercase;letter-spacing:0.04em}
+.pub-cat-badge.Académico{background:#e0f0ff;color:#1d4ed8}
+.pub-cat-badge.Bienestar{background:var(--green-pale);color:var(--green-dark)}
+.pub-cat-badge.Evento{background:var(--yellow-light);color:#92400e}
+.pub-cat-badge.Comunicado{background:#f3e8ff;color:#6d28d9}
+.pub-cat-badge.General{background:var(--gray-100);color:var(--gray-600)}
+.pub-pin{font-size:0.7rem;color:var(--yellow-dark);font-weight:700}
+.pub-fecha{font-size:0.74rem;color:var(--gray-400);margin-left:auto}
+.pub-title{font-size:1rem;font-weight:700;color:var(--green-dark);margin-bottom:0.5rem}
+.pub-content{font-size:0.875rem;color:var(--text-muted);line-height:1.7;margin-bottom:0.75rem}
+.pub-autor{font-size:0.75rem;color:var(--gray-400)}
+/* Formulario publicacion */
+.pub-form-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:1.5rem;display:none}
+.pub-form-card.visible{display:block}
+.pub-form-card h3{font-size:1rem;font-weight:700;color:var(--green-dark);margin-bottom:1rem}
+.form-field{margin-bottom:0.875rem}
+.form-field label{display:block;font-size:0.8rem;font-weight:600;color:var(--green-dark);margin-bottom:0.35rem}
+.form-field input,.form-field textarea,.form-field select{width:100%;padding:0.65rem 0.875rem;border:1.5px solid var(--gray-200);border-radius:var(--radius-md);font-size:0.9rem;background:var(--gray-50);color:var(--text);transition:border-color var(--trans)}
+.form-field input:focus,.form-field textarea:focus,.form-field select:focus{outline:none;border-color:var(--green-mid);background:var(--white)}
+.form-field textarea{min-height:110px;resize:vertical;line-height:1.6}
+.btn-pub-send{width:100%;background:var(--green-dark);color:#fff;font-weight:700;font-size:0.9rem;padding:0.75rem;border-radius:var(--radius-md);transition:all var(--trans);margin-top:0.25rem}
+.btn-pub-send:hover{background:var(--green-mid)}
+.pub-form-hint{font-size:0.78rem;color:var(--text-muted);text-align:center;padding:2rem;background:var(--gray-50);border-radius:var(--radius-lg);border:1.5px dashed var(--gray-200)}
+
+/* LOGIN */
+.login-section{min-height:calc(100dvh - 66px);display:flex;align-items:center;justify-content:center;padding:2rem 1.5rem;background:linear-gradient(160deg,var(--green-pale) 0%,var(--white) 60%)}
+.login-card{background:var(--white);border-radius:var(--radius-xl);padding:2.5rem;width:100%;max-width:420px;box-shadow:var(--shadow-lg);border:1px solid var(--gray-200)}
+.login-logo{text-align:center;margin-bottom:1.75rem}
+.login-logo img{width:64px;height:64px;border-radius:50%;margin:0 auto 0.875rem;border:3px solid var(--green-pale)}
+.login-logo h2{font-size:1.3rem;font-weight:800;color:var(--green-dark);margin-bottom:0.3rem}
+.login-logo p{font-size:0.83rem;color:var(--text-muted)}
+.form-group{margin-bottom:1rem}
+.form-group label{display:block;font-size:0.82rem;font-weight:600;color:var(--green-dark);margin-bottom:0.35rem}
+.form-input{width:100%;padding:0.7rem 1rem;border:1.5px solid var(--gray-200);border-radius:var(--radius-md);font-size:0.95rem;transition:border-color var(--trans);background:var(--gray-50);color:var(--text)}
+.form-input:focus{outline:none;border-color:var(--green-mid);background:var(--white)}
+.btn-login-submit{width:100%;background:linear-gradient(135deg,var(--green-mid),var(--green-dark));color:#fff;font-weight:700;font-size:1rem;padding:0.875rem;border-radius:var(--radius-md);margin-top:0.5rem;transition:all var(--trans);box-shadow:0 4px 16px rgba(45,122,79,0.3)}
+.btn-login-submit:hover{opacity:0.92;transform:translateY(-1px)}
+.btn-login-submit:disabled{opacity:0.5;cursor:not-allowed}
+.login-error{background:var(--red-light);color:var(--red);border-radius:var(--radius-md);padding:0.7rem 1rem;font-size:0.85rem;margin-top:0.875rem;display:none}
+.login-error.show{display:block}
+
+/* BANDEJA */
+.bandeja-section{padding:2.5rem 1.5rem}
+.bandeja-inner{max-width:960px;margin:0 auto}
+.bandeja-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.75rem}
+.bandeja-top h2{font-size:1.5rem;font-weight:800;color:var(--green-dark)}
+.badge-count{background:var(--red);color:#fff;font-size:0.72rem;font-weight:700;padding:0.15rem 0.55rem;border-radius:var(--radius-full);margin-left:0.4rem}
+.bandeja-info-bar{padding:0.875rem 1.25rem;background:var(--green-pale);border-radius:var(--radius-md);font-size:0.85rem;color:var(--text-muted);margin-bottom:1.25rem}
+/* Tabs no leido/leido */
+.bandeja-tabs{display:flex;gap:0.5rem;margin-bottom:1.25rem;border-bottom:2px solid var(--gray-200);padding-bottom:0}
+.bandeja-tab{padding:0.6rem 1.25rem;font-size:0.875rem;font-weight:600;color:var(--gray-500);background:none;border:none;border-bottom:2.5px solid transparent;margin-bottom:-2px;cursor:pointer;transition:all var(--trans);border-radius:var(--radius-sm) var(--radius-sm) 0 0}
+.bandeja-tab:hover{color:var(--green-dark);background:var(--green-pale)}
+.bandeja-tab.active{color:var(--green-dark);border-bottom-color:var(--green-mid)}
+/* Filtro fecha */
+.bandeja-filtros{display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;flex-wrap:wrap}
+.bandeja-filtros label{font-size:0.8rem;font-weight:600;color:var(--text-muted)}
+.bandeja-filtros select{padding:0.45rem 0.875rem;border:1.5px solid var(--gray-200);border-radius:var(--radius-md);font-size:0.82rem;background:var(--white);color:var(--text);cursor:pointer;transition:border-color var(--trans)}
+.bandeja-filtros select:focus{outline:none;border-color:var(--green-mid)}
+/* Grid de tarjetas */
+.msg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
+/* Tarjeta cerrada (sin contenido visible) */
+.msg-card{background:var(--white);border:1.5px solid var(--gray-200);border-radius:var(--radius-lg);padding:1.25rem;transition:all var(--trans);cursor:pointer;position:relative;overflow:hidden}
+.msg-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.msg-card.unread{border-color:var(--green-pale2);background:var(--green-pale)}
+.msg-card.warned{border-color:rgba(224,123,42,0.4);background:var(--orange-light)}
+.msg-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem}
+.msg-estado{font-size:0.7rem;font-weight:700;padding:0.25rem 0.65rem;border-radius:var(--radius-full);text-transform:uppercase;letter-spacing:0.04em}
+.msg-estado.nuevo{background:#dcfce7;color:#166534}
+.msg-estado.leido-badge{background:var(--gray-100);color:var(--gray-500)}
+.msg-estado.advertido{background:#ffedd5;color:#9a3412}
+.msg-fecha{font-size:0.73rem;color:var(--gray-400)}
+/* Contenido oculto — solo se ve al abrir */
+.msg-preview{font-size:0.82rem;color:var(--text-muted);font-style:italic;margin-bottom:0.875rem;line-height:1.5}
+.msg-cat-row{display:flex;align-items:center;gap:0.5rem}
+.msg-cat-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:0.2rem 0.6rem;border-radius:var(--radius-full)}
+.msg-actions-row{display:flex;gap:0.5rem;margin-top:0.875rem;border-top:1px solid var(--gray-200);padding-top:0.875rem}
+.btn-abrir{flex:1;background:var(--green-dark);color:#fff;font-size:0.8rem;font-weight:700;padding:0.5rem 0.75rem;border-radius:var(--radius-md);transition:all var(--trans)}
+.btn-abrir:hover{background:var(--green-mid)}
+.btn-leido{font-size:0.76rem;font-weight:600;color:var(--green-mid);padding:0.5rem 0.75rem;border-radius:var(--radius-md);border:1.5px solid var(--green-mid);transition:all var(--trans)}
+.btn-leido:hover{background:var(--green-pale)}
+.msg-leido-tag{font-size:0.73rem;color:var(--gray-400);font-style:italic}
+.bandeja-empty{text-align:center;padding:4rem 2rem;color:var(--text-muted)}
+/* Modal leer mensaje */
+.msg-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(5px);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.msg-modal-overlay.show{opacity:1;pointer-events:all}
+.msg-modal{background:var(--white);border-radius:var(--radius-xl);padding:2rem;width:100%;max-width:520px;box-shadow:var(--shadow-lg);transform:translateY(20px) scale(0.97);transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1)}
+.msg-modal-overlay.show .msg-modal{transform:translateY(0) scale(1)}
+.msg-modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.msg-modal-header h3{font-size:1.05rem;font-weight:800;color:var(--green-dark)}
+.msg-modal-warn{display:flex;align-items:flex-start;gap:0.5rem;background:var(--orange-light);border:1px solid rgba(224,123,42,0.35);border-radius:var(--radius-md);padding:0.75rem 1rem;font-size:0.82rem;color:#92400e;margin-bottom:1rem;line-height:1.5}
+.msg-modal-body{background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:var(--radius-md);padding:1.25rem;font-size:0.95rem;line-height:1.75;color:var(--text);min-height:100px;margin-bottom:1rem;white-space:pre-wrap}
+.msg-modal-meta{display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;font-size:0.78rem;color:var(--gray-400);margin-bottom:1.25rem}
+.msg-modal-footer{display:flex;justify-content:flex-end;gap:0.75rem}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(5px);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.modal-overlay.show{opacity:1;pointer-events:all}
+.modal{background:var(--white);border-radius:var(--radius-xl);padding:2rem;width:100%;max-width:500px;box-shadow:var(--shadow-lg);transform:translateY(20px) scale(0.97);transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1)}
+.modal-overlay.show .modal{transform:translateY(0) scale(1)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.modal-header h3{font-size:1.1rem;font-weight:800;color:var(--green-dark)}
+.modal-close{color:var(--gray-400);padding:0.25rem;border-radius:var(--radius-sm);transition:color var(--trans)}
+.modal-close:hover{color:var(--text)}
+.modal-profe{display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem;padding:1rem 1.25rem;background:var(--green-pale);border-radius:var(--radius-lg);border:1.5px solid var(--green-pale2)}
+.modal-profe-avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--green-mid),var(--green-dark));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:1.6rem;flex-shrink:0;overflow:hidden;border:3px solid var(--green-pale2);box-shadow:0 4px 12px rgba(26,74,46,0.18)}
+.modal-profe-avatar img{width:100%;height:100%;object-fit:cover}
+.modal-profe-info strong{font-size:1rem;color:var(--green-dark);display:block;font-weight:800;margin-bottom:0.2rem}
+.modal-profe-info span{font-size:0.8rem;color:var(--text-muted)}
+.anon-notice{display:flex;align-items:flex-start;gap:0.5rem;background:var(--yellow-light);border:1px solid rgba(240,180,41,0.3);border-radius:var(--radius-md);padding:0.75rem 1rem;font-size:0.82rem;color:#7a5a00;margin-bottom:1.25rem;line-height:1.5}
+.modal textarea{width:100%;padding:0.875rem;border:1.5px solid var(--gray-200);border-radius:var(--radius-md);font-size:0.93rem;line-height:1.6;resize:vertical;min-height:130px;transition:border-color var(--trans);background:var(--gray-50);color:var(--text)}
+.modal textarea:focus{outline:none;border-color:var(--green-mid);background:var(--white)}
+.char-counter{text-align:right;font-size:0.75rem;color:var(--gray-400);margin-top:0.35rem;margin-bottom:0.875rem}
+.char-counter.warn{color:var(--orange)}
+.char-counter.limit{color:var(--red)}
+.modal-cat label{font-size:0.8rem;font-weight:600;color:var(--green-dark);display:block;margin-bottom:0.35rem}
+.modal-cat select{width:100%;padding:0.6rem 0.875rem;border:1.5px solid var(--gray-200);border-radius:var(--radius-md);font-size:0.88rem;background:var(--gray-50);color:var(--text);transition:border-color var(--trans);margin-bottom:1.25rem}
+.modal-cat select:focus{outline:none;border-color:var(--green-mid)}
+.modal-actions{display:flex;gap:0.75rem;justify-content:flex-end}
+.btn-cancel{padding:0.6rem 1.25rem;border-radius:var(--radius-md);color:var(--text-muted);font-size:0.875rem;font-weight:600;border:1.5px solid var(--gray-200);transition:all var(--trans)}
+.btn-cancel:hover{border-color:var(--gray-400);color:var(--text)}
+.btn-send{padding:0.6rem 1.5rem;border-radius:var(--radius-md);background:linear-gradient(135deg,var(--green-mid),var(--green-dark));color:#fff;font-size:0.875rem;font-weight:700;transition:all var(--trans)}
+.btn-send:hover{opacity:0.9}
+.btn-send:disabled{opacity:0.45;cursor:not-allowed}
+.modal-success{text-align:center;padding:1rem 0}
+.modal-success .check{font-size:3rem;margin-bottom:0.875rem}
+.modal-success h4{font-size:1.1rem;font-weight:700;color:var(--green-dark);margin-bottom:0.5rem}
+.modal-success p{font-size:0.875rem;color:var(--text-muted);line-height:1.6}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:300;background:var(--green-dark);color:#fff;padding:0.875rem 1.5rem;border-radius:var(--radius-md);font-size:0.875rem;font-weight:600;box-shadow:var(--shadow-lg);transform:translateY(100px);opacity:0;transition:all 0.3s ease;max-width:320px;line-height:1.4}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.error{background:var(--red)}
+.toast.warning{background:var(--orange)}
+
+/* SKELETON */
+.skeleton{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-200) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:shimmer 1.5s ease-in-out infinite;border-radius:var(--radius-sm)}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.sk-card{height:220px;border-radius:var(--radius-lg)}
+
+/* FOOTER */
+footer{background:var(--green-dark);color:rgba(255,255,255,0.6);text-align:center;padding:1.5rem;font-size:0.8rem;line-height:1.6}
+footer strong{color:var(--yellow)}
+
+/* RESPONSIVE MÓVIL GENERAL */
+@media(max-width:600px){
+  .hero{padding:3rem 1.25rem 2.5rem}
+  .hero-stats{gap:1.5rem}
+  .stat-num{font-size:1.5rem}
+  .search-wrap input{width:140px}
+  .prof-grid{grid-template-columns:1fr;gap:1rem}
+ .prof-avatar{width:110px;height:110px;font-size:2.2rem}
+  .msg-grid{grid-template-columns:1fr}
+  .pub-layout{grid-template-columns:1fr}
+  .bandeja-inner{padding:0}
+  .modal{padding:1.5rem}
+  .modal-profe-avatar{width:56px;height:56px;font-size:1.3rem}
+  .login-card{padding:1.75rem 1.25rem}
+  .hero-actions{flex-direction:column;align-items:center}
+  .btn-primary,.btn-secondary{width:100%;max-width:280px;text-align:center}
+}
+
+/* UTILS */
+.spinner{width:32px;height:32px;border:3px solid var(--green-pale);border-top-color:var(--green-mid);border-radius:50%;animation:spin 0.7s linear infinite;margin:2rem auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-state{text-align:center;padding:3.5rem 2rem;color:var(--text-muted)}
+.empty-state .empty-icon{font-size:2.5rem;margin-bottom:0.75rem;opacity:0.5}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <div class="nav-logo" onclick="showView('home')">
+      <img src="./assets/logo-candelaria.jpg" alt="Logo La Candelaria" width="42" height="42">
+      <div class="nav-logo-text">ConectaCandelaria <span>I.E. La Candelaria</span></div>
+    </div>
+    <div class="nav-links" id="navLinks">
+      <button class="nav-link active" id="nl-home" onclick="showView('home');closeMenu()">Inicio</button>
+      <button class="nav-link" id="nl-directorio" onclick="showView('directorio');closeMenu()">Directorio</button>
+      <button class="nav-link" id="nl-publicaciones" onclick="showView('publicaciones');closeMenu()">Publicaciones</button>
+      <span id="navAuthArea">
+        <button class="nav-btn-login" onclick="showView('login');closeMenu()">Acceso Personal</button>
+      </span>
+      <!-- nav-user solo desktop -->
+      <div id="navUserDesktop"></div>
+    </div>
+    <!-- Theme toggle y hamburger siempre visibles -->
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" aria-label="Cambiar tema" style="margin-left:auto;flex-shrink:0">🌙</button>
+    <button class="hamburger" onclick="toggleMenu()" aria-label="Menú">
+      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- VIEW HOME -->
+<div id="view-home" class="view active">
+  <section class="hero">
+    <div class="hero-inner">
+      <img class="hero-logo" src="./assets/logo-candelaria.jpg" alt="Logo" width="90" height="90">
+      <div class="hero-badge">🔒 100% Anónimo y Seguro</div>
+      <h1>Tu voz <span>importa</span>,<br>sin miedo a hablar</h1>
+      <p>Escríbele a la psicóloga, coordinador o cualquier docente de manera completamente anónima. Tu identidad nunca será revelada.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="showView('directorio')">✉️ Enviar un mensaje</button>
+        <button class="btn-secondary" onclick="showView('publicaciones')">📢 Ver publicaciones</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><div class="stat-num" id="statProfes">11</div><div class="stat-label">Profesionales</div></div>
+        <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Anónimo</div></div>
+        <div class="stat"><div class="stat-num">24/7</div><div class="stat-label">Disponible</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-feed">
+    <div class="home-feed-inner">
+      <div class="section-label">
+        <h2>📢 Publicaciones recientes</h2>
+        <a onclick="showView('publicaciones')">Ver todas →</a>
+      </div>
+      <div class="home-feed-grid" id="homeFeedGrid"><div class="spinner"></div></div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="features-inner">
+      <div class="section-title"><h2>¿Cómo funciona?</h2><p>Un canal seguro entre estudiantes y la comunidad educativa</p></div>
+      <div class="features-grid">
+        <div class="feature-card"><div class="feat-icon fi-g">👥</div><h3>Elige a quién escribir</h3><p>Explora el directorio de profesores y personal de apoyo. Escoge la persona indicada.</p></div>
+        <div class="feature-card"><div class="feat-icon fi-y">✉️</div><h3>Escribe tu mensaje</h3><p>Redacta con total libertad. No se pide nombre ni ningún dato personal tuyo.</p></div>
+        <div class="feature-card"><div class="feat-icon fi-b">🔒</div><h3>Anonimato garantizado</h3><p>Tu mensaje llega directo a la bandeja del profesional. Nadie sabrá que fuiste tú.</p></div>
+        <div class="feature-card"><div class="feat-icon fi-r">📋</div><h3>Publicaciones del colegio</h3><p>Entérate de noticias, eventos y recursos publicados por el equipo institucional.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2025 <strong>I.E. La Candelaria</strong> · "Esperanza y Valor" · ConectaCandelaria</p>
+    <p style="margin-top:0.35rem;font-size:0.75rem">El anonimato de los estudiantes está siempre garantizado</p>
+  </footer>
+</div>
+
+<!-- VIEW DIRECTORIO -->
+<div id="view-directorio" class="view">
+  <section class="dir-section">
+    <div class="dir-top">
+      <h2>👥 Directorio de Profesionales</h2>
+      <div class="search-wrap">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="searchInput" placeholder="Buscar por nombre o cargo..." oninput="filtrarProfes()">
+      </div>
+    </div>
+    <div class="prof-grid" id="profesionalesGrid">
+      <div class="skeleton sk-card"></div><div class="skeleton sk-card"></div>
+      <div class="skeleton sk-card"></div><div class="skeleton sk-card"></div>
+      <div class="skeleton sk-card"></div><div class="skeleton sk-card"></div>
+    </div>
+  </section>
+</div>
+
+<!-- VIEW PUBLICACIONES -->
+<div id="view-publicaciones" class="view">
+  <section class="pub-section">
+    <div class="pub-layout">
+      <div>
+        <div class="pub-top">
+          <h2>📢 Publicaciones</h2>
+        </div>
+        <div class="filtros" id="filtrosPub">
+          <button class="filtro-btn active" data-cat="todos" onclick="filtrarPubs(this)">Todos</button>
+          <button class="filtro-btn" data-cat="Académico" onclick="filtrarPubs(this)">Académico</button>
+          <button class="filtro-btn" data-cat="Bienestar" onclick="filtrarPubs(this)">Bienestar</button>
+          <button class="filtro-btn" data-cat="Evento" onclick="filtrarPubs(this)">Evento</button>
+          <button class="filtro-btn" data-cat="Comunicado" onclick="filtrarPubs(this)">Comunicado</button>
+        </div>
+        <div id="pubList"><div class="spinner"></div></div>
+      </div>
+      <div>
+        <div id="pubFormCard" class="pub-form-card">
+          <h3>✍️ Nueva publicación</h3>
+          <div class="form-field"><label>Título</label><input type="text" id="pubTitulo" placeholder="Título de la publicación" maxlength="100"></div>
+          <div class="form-field"><label>Categoría</label>
+            <select id="pubCategoria"><option value="General">General</option><option value="Académico">Académico</option><option value="Evento">Evento</option><option value="Bienestar">Bienestar</option><option value="Comunicado">Comunicado</option></select>
+          </div>
+          <div class="form-field"><label>Contenido</label><textarea id="pubContenido" placeholder="Escribe el contenido..." maxlength="2000"></textarea></div>
+          <button class="btn-pub-send" onclick="publicar()">Publicar</button>
+        </div>
+        <div id="pubFormHint" class="pub-form-hint">🔐 Inicia sesión como personal del colegio para crear publicaciones.</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- VIEW LOGIN -->
+<div id="view-login" class="view">
+  <section class="login-section">
+    <div class="login-card">
+      <div class="login-logo">
+        <img src="./assets/logo-candelaria.jpg" alt="Logo" width="64" height="64">
+        <h2>Acceso Personal</h2>
+        <p>Ingresa con tus credenciales institucionales</p>
+      </div>
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group"><label>Correo institucional</label><input class="form-input" type="email" id="loginEmail" placeholder="correo@lacandelaria.edu.co" required></div>
+        <div class="form-group"><label>Contraseña</label><input class="form-input" type="password" id="loginPass" placeholder="••••••••" required></div>
+        <button type="submit" class="btn-login-submit" id="btnLoginSubmit">Ingresar</button>
+        <div class="login-error" id="loginError">Correo o contraseña incorrectos.</div>
+      </form>
+    </div>
+  </section>
+</div>
+
+<!-- VIEW BANDEJA -->
+<div id="view-bandeja" class="view">
+  <section class="bandeja-section">
+    <div class="bandeja-inner">
+      <div class="bandeja-top">
+        <h2>📥 Mi Bandeja <span class="badge-count" id="unreadCount" style="display:none">0</span></h2>
+        <button onclick="handleLogout()" style="color:var(--red);font-size:0.85rem;font-weight:600;padding:0.45rem 1rem;border-radius:var(--radius-full);border:1.5px solid var(--red);transition:all var(--trans)">Cerrar sesión</button>
+      </div>
+      <div class="bandeja-info-bar" id="bandejaInfo"></div>
+      <div id="mensajesList"><div class="spinner"></div></div>
+    </div>
+  </section>
+</div>
+
+<!-- MODAL MENSAJE -->
+<div class="modal-overlay" id="modalMensaje" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>✉️ Mensaje anónimo</h3>
+      <button class="modal-close" onclick="closeModal()" aria-label="Cerrar">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div id="modalFormContent">
+      <div class="modal-profe" id="modalProfeInfo"></div>
+      <div class="anon-notice">🔒 <span>Tu mensaje es 100% anónimo. No se registra ningún dato personal tuyo en ningún momento.</span></div>
+      <textarea id="msgTexto" placeholder="Escribe tu mensaje aquí..." maxlength="1000" oninput="updateCharCount()"></textarea>
+      <div class="char-counter" id="charCounter">0 / 1000</div>
+      <div class="modal-cat">
+        <label>Categoría</label>
+        <select id="msgCategoria"><option value="General">General</option><option value="Académico">Académico</option><option value="Bienestar">Bienestar</option><option value="Convivencia">Convivencia</option></select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+        <button class="btn-send" id="btnSend" onclick="enviarMensaje()">Enviar mensaje</button>
+      </div>
+    </div>
+    <div id="modalSuccessContent" style="display:none">
+      <div class="modal-success">
+        <div class="check">✅</div>
+        <h4>¡Mensaje enviado!</h4>
+        <p>Tu mensaje llegó de forma anónima. El profesional lo leerá pronto.</p>
+        <button class="btn-primary" style="margin-top:1.25rem;display:inline-block;border-radius:var(--radius-full)" onclick="closeModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- MODAL LEER MENSAJE -->
+<div class="msg-modal-overlay" id="msgModal">
+  <div class="msg-modal">
+    <div class="msg-modal-header">
+      <h3>✉️ Mensaje anónimo</h3>
+      <button style="color:var(--gray-400);padding:0.25rem;border-radius:var(--radius-sm)" onclick="closeMsgModal()" aria-label="Cerrar">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div id="msgModalWarn" class="msg-modal-warn" style="display:none">⚠️ <span>Este mensaje contiene lenguaje poco apropiado. Léelo con discreción.</span></div>
+    <div id="msgModalMeta" class="msg-modal-meta"></div>
+    <div id="msgModalBody" class="msg-modal-body"></div>
+    <div class="msg-modal-footer">
+      <button id="msgModalBtnLeido" class="btn-leido" onclick="marcarLeidoDesdeModal()">✓ Marcar como leído</button>
+      <button class="btn-abrir" style="flex:0;padding:0.5rem 1.25rem" onclick="closeMsgModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://pgqxpofjjphldyvywbwn.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBncXhwb2ZqanBobGR5dnl3YnduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxMDExMTksImV4cCI6MjA5MTY3NzExOX0.03z0yXgB0Ddx_WrTtqMgplwCvq6AVCw0fCrw2ckWJ-o';
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+
+// === FOTOS LOCALES (prueba) ===
+// Cuando foto_url en Supabase está vacío, usa la imagen local
+const FOTOS_LOCALES = {
+  'Messi Ronaldo': './assets/profesores/messi_ronaldo.jpg',
+  'Ojo Al Pilin': './assets/profesores/ojo_al_pilin.jpg',
+  'Tilin': './assets/profesores/tilin.jpg',
+  'Vergacareverga': './assets/profesores/vergacareverga.jpg',
+  'Son Goku': './assets/profesores/son_goku.jpg',
+  'La Corianita': './assets/profesores/la_corianita.jpg',
+  'La Que No Sabe Lo Que Quiere': './assets/profesores/la_que_no_sabe.jpg',
+  'Punta Talon': './assets/profesores/punta_talon.jpg',
+  'David El Crack': './assets/profesores/david_el_crack.jpg',
+  'Pedro El Escamoso': './assets/profesores/pedro_el_escamoso.jpg',
+  'La Celeña Asento Rico': './assets/profesores/la_celena_asento.jpg',
+};
+
+function getFoto(p, size) {
+  const url = p.foto_url || FOTOS_LOCALES[p.nombre];
+  if (url) return `<img src="${url}" alt="${p.nombre}" width="${size}" height="${size}" loading="lazy" onerror="this.parentElement.innerHTML='<span>'+getIni(p.nombre)+'</span>'">`;
+  return `<span>${getIni(p.nombre)}</span>`;
+}
+function getIni(nombre) {
+  return nombre.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+}
+
+// === MODERACION ===
+const PALABRAS_GRAVES = ['matar','suicidar','suicidio','violacion','violar','mierda','puta','hijueputa','hijuepucha','culo','verga','marica','gonorrea','malparido','perras','zorras','matar','asesinar'];
+const PALABRAS_ADVERTENCIA = ['idiota','estupido','bruto','tonto','feo','odio','basura','asco','inutil','pendejo','bobo','sapo','ridiculo'];
+
+function moderarMensaje(texto) {
+  const lower = texto.toLowerCase();
+  const grave = PALABRAS_GRAVES.some(p => lower.includes(p));
+  const advertencia = PALABRAS_ADVERTENCIA.some(p => lower.includes(p));
+  if (grave) return 'grave';
+  if (advertencia) return 'advertencia';
+  return 'ok';
+}
+
+// === STATE ===
+let currentUser = null;
+let currentProfesional = null;
+let allProfes = [];
+let allPubs = [];
+let activeFiltro = 'todos';
+let selectedProfe = null;
+let darkMode = false;
+
+// === INIT ===
+(async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) { currentUser = session.user; await loadPerfil(); }
+  updateNav();
+  cargarProfesionales();
+  cargarPublicaciones();
+  cargarHomeFeed();
+})();
+
+sb.auth.onAuthStateChange(async (_e, session) => {
+  currentUser = session ? session.user : null;
+  if (currentUser) await loadPerfil(); else currentProfesional = null;
+  updateNav();
+});
+
+// === THEME ===
+function toggleTheme() {
+  darkMode = !darkMode;
+  document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+  document.getElementById('themeBtn').textContent = darkMode ? '☀️' : '🌙';
+}
+
+// === NAV ===
+function showView(v) {
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  document.getElementById('view-' + v).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+  const nl = document.getElementById('nl-' + v);
+  if (nl) nl.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (v === 'bandeja' && currentUser) cargarMensajes();
+  if (v === 'publicaciones') cargarPublicaciones();
+}
+function toggleMenu() { document.getElementById('navLinks').classList.toggle('open'); }
+function closeMenu() { document.getElementById('navLinks').classList.remove('open'); }
+
+function updateNav() {
+  const area = document.getElementById('navAuthArea');
+  const pubForm = document.getElementById('pubFormCard');
+  const pubHint = document.getElementById('pubFormHint');
+  if (currentUser && currentProfesional) {
+    area.innerHTML = `
+      <button class="nav-link" id="nl-bandeja" onclick="showView('bandeja');closeMenu()">
+        📥 Bandeja <span class="nav-unread" id="navUnread" style="display:none"></span>
+      </button>
+      <span class="nav-user"><span class="nav-user-dot"></span>${currentProfesional.nombre.split(' ')[0]}</span>
+      <button class="btn-logout" onclick="handleLogout()">Salir</button>`;
+    if (pubForm) { pubForm.classList.add('visible'); }
+    if (pubHint) pubHint.style.display = 'none';
+    cargarConteoUnread();
+  } else {
+    area.innerHTML = `<button class="nav-btn-login" onclick="showView('login');closeMenu()">Acceso Personal</button>`;
+    if (pubForm) pubForm.classList.remove('visible');
+    if (pubHint) pubHint.style.display = 'block';
+  }
+}
+
+async function cargarConteoUnread() {
+  if (!currentProfesional) return;
+  const { count } = await sb.from('mensajes').select('*', { count: 'exact', head: true })
+    .eq('profesional_id', currentProfesional.id).eq('leido', false);
+  const badge = document.getElementById('navUnread');
+  if (badge) { badge.textContent = count; badge.style.display = count > 0 ? 'inline' : 'none'; }
+}
+
+// === AUTH ===
+async function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const btn = document.getElementById('btnLoginSubmit');
+  const errEl = document.getElementById('loginError');
+  btn.textContent = 'Ingresando...'; btn.disabled = true;
+  errEl.classList.remove('show');
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if (error) { errEl.classList.add('show'); btn.textContent = 'Ingresar'; btn.disabled = false; return; }
+  currentUser = data.user;
+  await loadPerfil();
+  updateNav();
+  showView('bandeja');
+  showToast('✅ Bienvenido/a, ' + (currentProfesional ? currentProfesional.nombre : ''));
+  btn.textContent = 'Ingresar'; btn.disabled = false;
+}
+async function handleLogout() {
+  await sb.auth.signOut();
+  currentUser = null; currentProfesional = null;
+  updateNav(); showView('home');
+  showToast('Sesión cerrada');
+}
+async function loadPerfil() {
+  if (!currentUser) return;
+  const { data: perfil } = await sb.from('perfiles').select('profesional_id').eq('id', currentUser.id).single();
+  if (perfil) {
+    const { data: prof } = await sb.from('profesionales').select('*').eq('id', perfil.profesional_id).single();
+    currentProfesional = prof;
+  }
+}
+
+// === PROFESIONALES ===
+async function cargarProfesionales() {
+  const { data } = await sb.from('profesionales').select('*').eq('activo', true).order('nombre');
+  if (!data) return;
+  allProfes = data;
+  document.getElementById('statProfes').textContent = data.length;
+  renderProfes(data);
+}
+function renderProfes(list) {
+  const grid = document.getElementById('profesionalesGrid');
+  if (!list.length) { grid.innerHTML = '<p style="color:var(--text-muted);padding:1rem">Sin resultados.</p>'; return; }
+  grid.innerHTML = list.map(p => {
+    return `<div class="prof-card">
+      <div class="prof-avatar">${getFoto(p, 80)}</div>
+      <div class="prof-name">${p.nombre}</div>
+      <div class="prof-cargo">${p.cargo}</div>
+      <button class="btn-msg" onclick='abrirModal(${JSON.stringify(p)})'>✉️ Enviar mensaje</button>
+    </div>`;
+  }).join('');
+}
+function filtrarProfes() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  renderProfes(allProfes.filter(p => p.nombre.toLowerCase().includes(q) || p.cargo.toLowerCase().includes(q)));
+}
+
+// === MODAL MENSAJE ===
+function abrirModal(profe) {
+  selectedProfe = profe;
+  document.getElementById('modalProfeInfo').innerHTML = `
+    <div class="modal-profe-avatar">${getFoto(profe, 72)}</div>
+    <div class="modal-profe-info"><strong>${profe.nombre}</strong><span>${profe.cargo}</span></div>`;
+  document.getElementById('msgTexto').value = '';
+  document.getElementById('charCounter').textContent = '0 / 1000';
+  document.getElementById('charCounter').className = 'char-counter';
+  document.getElementById('msgCategoria').value = 'General';
+  document.getElementById('modalFormContent').style.display = 'block';
+  document.getElementById('modalSuccessContent').style.display = 'none';
+  document.getElementById('modalMensaje').classList.add('show');
+  setTimeout(() => document.getElementById('msgTexto').focus(), 150);
+}
+function closeModal() {
+  document.getElementById('modalMensaje').classList.remove('show');
+  selectedProfe = null;
+}
+function updateCharCount() {
+  const len = document.getElementById('msgTexto').value.length;
+  const el = document.getElementById('charCounter');
+  el.textContent = len + ' / 1000';
+  el.className = 'char-counter' + (len > 900 ? ' limit' : len > 700 ? ' warn' : '');
+}
+async function enviarMensaje() {
+  const texto = document.getElementById('msgTexto').value.trim();
+  const cat = document.getElementById('msgCategoria').value;
+  if (!texto || texto.length < 5) { showToast('Escribe al menos 5 caracteres', 'error'); return; }
+  const nivel = moderarMensaje(texto);
+  if (nivel === 'grave') {
+    showToast('⚠️ Tu mensaje contiene lenguaje inapropiado. Por favor, reformúlalo con respeto.', 'error');
+    return;
+  }
+  const btn = document.getElementById('btnSend');
+  btn.disabled = true; btn.textContent = 'Enviando...';
+  const { error } = await sb.from('mensajes').insert({
+    profesional_id: selectedProfe.id,
+    contenido: texto,
+    categoria: cat,
+    advertencia: nivel === 'advertencia'
+  });
+  btn.disabled = false; btn.textContent = 'Enviar mensaje';
+  if (error) { showToast('Error al enviar. Inténtalo de nuevo.', 'error'); return; }
+  if (nivel === 'advertencia') showToast('⚠️ Mensaje enviado, pero contiene lenguaje poco apropiado.', 'warning');
+  document.getElementById('modalFormContent').style.display = 'none';
+  document.getElementById('modalSuccessContent').style.display = 'block';
+}
+
+// === PUBLICACIONES ===
+async function cargarPublicaciones() {
+  const list = document.getElementById('pubList');
+  if (!list) return;
+  const { data } = await sb.from('publicaciones').select('*, profesionales(nombre,cargo)')
+    .eq('publicado', true).order('fijada', { ascending: false }).order('created_at', { ascending: false });
+  allPubs = data || [];
+  renderPubs(allPubs);
+}
+function renderPubs(pubs) {
+  const list = document.getElementById('pubList');
+  if (!pubs.length) { list.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p>Aún no hay publicaciones.</p></div>'; return; }
+  const filtrado = activeFiltro === 'todos' ? pubs : pubs.filter(p => p.categoria === activeFiltro);
+  if (!filtrado.length) { list.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><p>No hay publicaciones en esta categoría.</p></div>'; return; }
+  list.innerHTML = filtrado.map(p => pubCardHTML(p)).join('');
+}
+function pubCardHTML(p) {
+  const fecha = new Date(p.created_at).toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' });
+  const pin = p.fijada ? '<span class="pub-pin">📌 Fijada</span>' : '';
+  return `<div class="pub-card">
+    <div class="pub-cat-bar ${p.categoria}"></div>
+    <div class="pub-card-body">
+      <div class="pub-meta-row">
+        <span class="pub-cat-badge ${p.categoria}">${p.categoria}</span>${pin}
+        <span class="pub-fecha">📅 ${fecha}</span>
+      </div>
+      <div class="pub-title">${p.titulo}</div>
+      <div class="pub-content">${p.contenido}</div>
+      <div class="pub-autor">✍️ ${p.profesionales ? p.profesionales.nombre : 'Institución'} · ${p.profesionales ? p.profesionales.cargo : ''}</div>
+    </div>
+  </div>`;
+}
+function filtrarPubs(btn) {
+  document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeFiltro = btn.dataset.cat;
+  renderPubs(allPubs);
+}
+async function publicar() {
+  const titulo = document.getElementById('pubTitulo').value.trim();
+  const contenido = document.getElementById('pubContenido').value.trim();
+  const categoria = document.getElementById('pubCategoria').value;
+  if (!titulo || !contenido) { showToast('Completa el título y contenido', 'error'); return; }
+  if (!currentProfesional) { showToast('Debes iniciar sesión', 'error'); return; }
+  const btn = document.querySelector('.btn-pub-send');
+  btn.disabled = true; btn.textContent = 'Publicando...';
+  const { error } = await sb.from('publicaciones').insert({ autor_id: currentProfesional.id, titulo, contenido, categoria });
+  btn.disabled = false; btn.textContent = 'Publicar';
+  if (error) { showToast('Error al publicar', 'error'); return; }
+  document.getElementById('pubTitulo').value = '';
+  document.getElementById('pubContenido').value = '';
+  cargarPublicaciones();
+  showToast('✅ Publicación creada');
+}
+async function cargarHomeFeed() {
+  const grid = document.getElementById('homeFeedGrid');
+  const { data } = await sb.from('publicaciones').select('*, profesionales(nombre)')
+    .eq('publicado', true).order('created_at', { ascending: false }).limit(3);
+  if (!data || !data.length) { grid.innerHTML = '<p style="color:var(--text-muted)">Aún no hay publicaciones.</p>'; return; }
+  grid.innerHTML = data.map(p => pubCardHTML(p)).join('');
+}
+
+// === BANDEJA ===
+let todosLosMensajes = [];
+let tabActiva = 'nuevos';
+let filtroFecha = 'todos';
+let msgModalActual = null;
+
+async function cargarMensajes() {
+  const list = document.getElementById('mensajesList');
+  const info = document.getElementById('bandejaInfo');
+  if (!currentProfesional) { list.innerHTML = '<p>No tienes perfil vinculado.</p>'; return; }
+  info.innerHTML = `👋 Hola, <strong>${currentProfesional.nombre}</strong> · ${currentProfesional.cargo}`;
+  list.innerHTML = `<div class="bandeja-tabs">
+    <button class="bandeja-tab active" id="tab-nuevos" onclick="cambiarTab('nuevos')">📬 Por leer <span class="badge-count" id="unreadCount" style="display:none">0</span></button>
+    <button class="bandeja-tab" id="tab-leidos" onclick="cambiarTab('leidos')">✓ Leídos</button>
+  </div>
+  <div class="bandeja-filtros">
+    <label>📅 Filtrar por:</label>
+    <select onchange="cambiarFecha(this.value)">
+      <option value="todos">Todos</option>
+      <option value="hoy">Hoy</option>
+      <option value="semana">Esta semana</option>
+      <option value="mes">Este mes</option>
+    </select>
+  </div>
+  <div id="msgGrid" class="msg-grid"></div>`;
+  const { data } = await sb.from('mensajes').select('*').eq('profesional_id', currentProfesional.id).order('created_at', { ascending: false });
+  todosLosMensajes = data || [];
+  actualizarBadges();
+  renderMensajes();
+}
+
+function cambiarTab(t) {
+  tabActiva = t;
+  document.querySelectorAll('.bandeja-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + t).classList.add('active');
+  renderMensajes();
+}
+
+function cambiarFecha(v) { filtroFecha = v; renderMensajes(); }
+
+function filtrarPorFecha(msgs) {
+  if (filtroFecha === 'todos') return msgs;
+  const ahora = new Date();
+  return msgs.filter(m => {
+    const d = new Date(m.created_at);
+    if (filtroFecha === 'hoy') return d.toDateString() === ahora.toDateString();
+    if (filtroFecha === 'semana') { const s = new Date(ahora); s.setDate(ahora.getDate()-7); return d >= s; }
+    if (filtroFecha === 'mes') return d.getMonth() === ahora.getMonth() && d.getFullYear() === ahora.getFullYear();
+  });
+}
+
+function renderMensajes() {
+  const grid = document.getElementById('msgGrid');
+  if (!grid) return;
+  let msgs = todosLosMensajes.filter(m => tabActiva === 'nuevos' ? !m.leido : m.leido);
+  msgs = filtrarPorFecha(msgs);
+  if (!msgs.length) {
+    grid.innerHTML = `<div class="bandeja-empty" style="grid-column:1/-1"><div style="font-size:2.5rem;margin-bottom:0.75rem">${tabActiva === 'nuevos' ? '📭' : '📂'}</div><p>${tabActiva === 'nuevos' ? 'No tienes mensajes por leer.' : 'No tienes mensajes leídos.'}</p></div>`;
+    return;
+  }
+  const catStyle = cat => cat === 'Académico' ? 'background:#e0f0ff;color:#1d4ed8'
+    : cat === 'Bienestar' ? 'background:#e8f5ed;color:#1a4a2e'
+    : cat === 'Convivencia' ? 'background:#f3e8ff;color:#6d28d9'
+    : 'background:#f1f3f5;color:#4b5563';
+  grid.innerHTML = msgs.map(m => {
+    const fecha = new Date(m.created_at).toLocaleString('es-CO', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const estadoBadge = m.advertencia
+      ? `<span class="msg-estado advertido">⚠️ Advertido</span>`
+      : m.leido ? `<span class="msg-estado leido-badge">✓ Leído</span>`
+      : `<span class="msg-estado nuevo">● Nuevo</span>`;
+    const preview = m.advertencia
+      ? `<div class="msg-preview">⚠️ Este mensaje fue marcado por contener lenguaje inapropiado. Ábrelo para decidir si leerlo.</div>`
+      : `<div class="msg-preview">🔒 Haz clic en "Abrir mensaje" para leer el contenido.</div>`;
+    const btnLeido = !m.leido ? `<button class="btn-leido" onclick="event.stopPropagation();marcarLeido('${m.id}')">✓ Leído</button>` : '';
+    return `<div class="msg-card ${m.leido ? '' : 'unread'} ${m.advertencia ? 'warned' : ''}" id="msg-${m.id}" onclick="abrirMsgModal('${m.id}')">
+      <div class="msg-card-top">${estadoBadge}<span class="msg-fecha">📅 ${fecha}</span></div>
+      ${preview}
+      <div class="msg-cat-row"><span class="msg-cat-badge" style="${catStyle(m.categoria)}">${m.categoria}</span></div>
+      <div class="msg-actions-row">
+        <button class="btn-abrir" onclick="event.stopPropagation();abrirMsgModal('${m.id}')">📖 Abrir mensaje</button>
+        ${btnLeido}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function abrirMsgModal(id) {
+  const m = todosLosMensajes.find(x => x.id === id);
+  if (!m) return;
+  msgModalActual = m;
+  const fecha = new Date(m.created_at).toLocaleString('es-CO', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const catStyle = m.categoria === 'Académico' ? 'background:#e0f0ff;color:#1d4ed8'
+    : m.categoria === 'Bienestar' ? 'background:#e8f5ed;color:#1a4a2e'
+    : m.categoria === 'Convivencia' ? 'background:#f3e8ff;color:#6d28d9'
+    : 'background:#f1f3f5;color:#4b5563';
+  document.getElementById('msgModalWarn').style.display = m.advertencia ? 'flex' : 'none';
+  document.getElementById('msgModalBody').textContent = m.contenido;
+  document.getElementById('msgModalMeta').innerHTML = `<span style="padding:0.2rem 0.6rem;border-radius:var(--radius-full);font-size:0.7rem;font-weight:700;${catStyle}">${m.categoria}</span><span>📅 ${fecha}</span>`;
+  const btnLeido = document.getElementById('msgModalBtnLeido');
+  btnLeido.style.display = m.leido ? 'none' : 'inline-flex';
+  document.getElementById('msgModal').classList.add('show');
+  if (!m.leido) marcarLeido(id, true);
+}
+
+function closeMsgModal() {
+  document.getElementById('msgModal').classList.remove('show');
+  msgModalActual = null;
+}
+
+async function marcarLeidoDesdeModal() {
+  if (!msgModalActual) return;
+  await marcarLeido(msgModalActual.id);
+  document.getElementById('msgModalBtnLeido').style.display = 'none';
+}
+
+async function marcarLeido(id, silencioso = false) {
+  await sb.from('mensajes').update({ leido: true }).eq('id', id);
+  const m = todosLosMensajes.find(x => x.id === id);
+  if (m) m.leido = true;
+  actualizarBadges();
+  renderMensajes();
+  if (!silencioso) showToast('✓ Mensaje marcado como leído');
+}
+
+function actualizarBadges() {
+  const unread = todosLosMensajes.filter(m => !m.leido).length;
+  const badge = document.getElementById('unreadCount');
+  if (badge) { badge.textContent = unread; badge.style.display = unread > 0 ? 'inline' : 'none'; }
+  const nb = document.getElementById('navUnread');
+  if (nb) { nb.textContent = unread; nb.style.display = unread > 0 ? 'inline' : 'none'; }
+}
+
+// === TOAST ===
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (type === 'error' ? ' error' : type === 'warning' ? ' warning' : '');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+// === CLOSE ON OVERLAY / ESC ===
+document.getElementById('modalMensaje').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+document.getElementById('msgModal').addEventListener('click', function(e) { if (e.target === this) closeMsgModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeMsgModal(); } });
+</script>
+</body>
+</html>
